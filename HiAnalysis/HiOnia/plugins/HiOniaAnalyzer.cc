@@ -1620,7 +1620,8 @@ void HiOniaAnalyzer::InitTree() {
 
     if (!_onlySingleMuons) {
       myTree->Branch("Gen_QQ_size", &Gen_QQ_size, "Gen_QQ_size/S");
-      //myTree->Branch("Gen_QQ_type",      Gen_QQ_type,    "Gen_QQ_type[Gen_QQ_size]/S");
+      myTree->Branch("Gen_QQ_pdgid", Gen_QQ_pdgid, "Gen_QQ_pdgid[Gen_QQ_size]/I");
+      myTree->Branch("Gen_QQ_type", Gen_QQ_type, "Gen_QQ_type[Gen_QQ_size]/S");
       if (std::strcmp("array", _mom4format.c_str()) == 0) {
         myTree->Branch("Gen_QQ_4mom", "TClonesArray", &Gen_QQ_4mom, 32000, 0);
       }
