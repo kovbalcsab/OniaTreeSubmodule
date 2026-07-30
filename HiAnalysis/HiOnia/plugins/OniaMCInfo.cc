@@ -80,14 +80,28 @@ void HiOniaAnalyzer::fillGenInfo() {
     for (std::vector<reco::GenParticle>::const_iterator it = collGenParticles->begin(); it != collGenParticles->end();
          ++it) {
       const reco::GenParticle* gen = &(*it);
-
-      if (abs(gen->pdgId()) == _oniaPDG && (gen->status() == 2 || (abs(gen->pdgId()) == 23 && gen->status() == 62)) &&
+      
+      bool goodGen = false;
+      if (_oniaPDG == 443) {
+        // Allow for non-Jpsi resonances to be included in gen
+        goodGen = abs(gen->pdgId()) ==    443 || // J/Psi
+                  abs(gen->pdgId()) == 100443 || // Psi(2S)
+                  abs(gen->pdgId()) == 200443 || // Psi(4040)
+                  abs(gen->pdgId()) == 300443 || // Psi(4230)
+                  abs(gen->pdgId()) == 400443 || // Psi(4360)
+                  abs(gen->pdgId()) == 500443 || // Psi(4415)
+                  abs(gen->pdgId()) == 600443;   // Psi(4660)
+      } else {
+        goodGen = abs(gen->pdgId()) == _oniaPDG;
+      }
+      if (goodGen && (gen->status() == 2 || (abs(gen->pdgId()) == 23 && gen->status() == 62)) &&
           gen->numberOfDaughters() >= 2) {
         reco::GenParticleRef genMuon1 = findDaughterRef(gen->daughterRef(0), gen->pdgId());
         reco::GenParticleRef genMuon2 = findDaughterRef(gen->daughterRef(1), gen->pdgId());
 
         if (abs(genMuon1->pdgId()) == 13 && abs(genMuon2->pdgId()) == 13 && (genMuon1->status() == 1) &&
             (genMuon2->status() == 1)) {
+          Gen_QQ_pdgid[Gen_QQ_size] = gen->pdgId(); // Store PDG ID
           Gen_QQ_Bc_idx[Gen_QQ_size] = -1;
           Gen_QQ_type[Gen_QQ_size] = _isPromptMC ? 0 : 1;  // prompt: 0, non-prompt: 1
           std::pair<std::vector<reco::GenParticleRef>, std::pair<float, float> > MCinfo = findGenMCInfo(gen);
