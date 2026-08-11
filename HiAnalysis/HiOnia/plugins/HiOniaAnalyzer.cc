@@ -51,7 +51,8 @@ HiOniaAnalyzer::HiOniaAnalyzer(const edm::ParameterSet& iConfig)
       _onlySingleMuons(iConfig.getParameter<bool>("onlySingleMuons")),
       _fillRecoTracks(iConfig.getParameter<bool>("fillRecoTracks")),
       _isHI(iConfig.getUntrackedParameter<bool>("isHI", false)),
-      _isPA(iConfig.getUntrackedParameter<bool>("isPA", true)),
+      _isPA(iConfig.getUntrackedParameter<bool>("isPA", false)),
+      _isUPC(iConfig.getUntrackedParameter<bool>("isUPC", false)),
       _isMC(iConfig.getUntrackedParameter<bool>("isMC", false)),
       _isPromptMC(iConfig.getUntrackedParameter<bool>("isPromptMC", true)),
       _useEvtPlane(iConfig.getUntrackedParameter<bool>("useEvtPlane", false)),
@@ -61,7 +62,7 @@ HiOniaAnalyzer::HiOniaAnalyzer(const edm::ParameterSet& iConfig)
       _flipJpsiDirection(iConfig.getParameter<int>("flipJpsiDirection")),
       _genealogyInfo(iConfig.getParameter<bool>("genealogyInfo")),
       _miniAODcut(iConfig.getParameter<bool>("miniAODcut")),
-      _oniaPDG(iConfig.getParameter<int>("oniaPDG")),
+      _oniaPDG(iConfig.getParameter<std::vector<int> >("oniaPDG")),
       _BcPDG(iConfig.getParameter<int>("BcPDG")),
       _OneMatchedHLTMu(iConfig.getParameter<int>("OneMatchedHLTMu")),
       _checkTrigNames(iConfig.getParameter<bool>("checkTrigNames")),
@@ -378,7 +379,7 @@ void HiOniaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   if (!_onlySingleMuons)
     this->fillRecoHistos();
 
-  //for pp, record Ntracks as well
+  //for pp and UPC, record Ntracks as well
   if (!(_isHI) && !(_isPA)) {
     iEvent.getByToken(_recoTracksToken, collTracks);
     if (collTracks.isValid()) {
@@ -1344,13 +1345,17 @@ void HiOniaAnalyzer::InitTree() {
     myTree->Branch("Npix", &Npix, "Npix/S");
     myTree->Branch("NpixelTracks", &NpixelTracks, "NpixelTracks/S");
   }
+  else if (_isUPC) {
+    myTree->Branch("Npix", &Npix, "Npix/S");
+    myTree->Branch("NpixelTracks", &NpixelTracks, "NpixelTracks/S");
+  }
   myTree->Branch("Ntracks", &Ntracks, "Ntracks/S");
 
   //myTree->Branch("nTrig", &nTrig, "nTrig/I");
   myTree->Branch("trigPrescale", trigPrescale, Form("trigPrescale[%d]/I", nTrig));
   myTree->Branch("HLTriggers", &HLTriggers, "HLTriggers/l");
 
-  if ((_isHI || _isPA)) {
+  if ((_isHI || _isPA || _isUPC)) {
 
     if (_SumETvariables){
       myTree->Branch("SumET_HF", &SumET_HF, "SumET_HF/F");
@@ -1368,7 +1373,7 @@ void HiOniaAnalyzer::InitTree() {
       //myTree->Branch("SumET_ZDCminus", &SumET_ZDCminus, "SumET_ZDCminus/F");
     }
    
-    if (_useEvtPlane){
+    if (_useEvtPlane && !_isUPC){
       myTree->Branch("nEP", &nEP, "nEP/I");
       myTree->Branch("rpAng_origin", &rpAng_origin, "rpAng_origin[nEP]/F");
       myTree->Branch("rpSin_origin", &rpSin_origin, "rpSin_origin[nEP]/F");

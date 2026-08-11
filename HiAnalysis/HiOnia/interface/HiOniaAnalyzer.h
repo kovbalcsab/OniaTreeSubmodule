@@ -281,7 +281,7 @@ private:
   float Gen_pthat;   // ptHat scale of generated hard scattering
 
   Short_t Gen_QQ_size;               // number of generated Onia
-  int Gen_QQ_pdgid[Max_QQ_size];     // PDG ID of gen onia, intended for MC with multiple resonances
+  int     Gen_QQ_pdgid[Max_QQ_size]; // PDG ID of gen onia, intended for MC with multiple resonances
   Short_t Gen_QQ_type[Max_QQ_size];  // Onia type: prompt, non-prompt, unmatched
   float Gen_QQ_ctau[Max_QQ_size];    // ctau: flight time
   float Gen_QQ_ctau3D[Max_QQ_size];  // ctau3D: 3D flight time
@@ -569,6 +569,7 @@ private:
   bool _fillRecoTracks;
   bool _isHI;
   bool _isPA;
+  bool _isUPC;
   bool _isMC;
   bool _isPromptMC;
   bool _useEvtPlane;
@@ -579,7 +580,7 @@ private:
   bool _genealogyInfo;
   bool _miniAODcut;
 
-  int _oniaPDG;
+  std::vector<int> _oniaPDG;
   int _BcPDG;
   int _OneMatchedHLTMu;
   bool _checkTrigNames;
