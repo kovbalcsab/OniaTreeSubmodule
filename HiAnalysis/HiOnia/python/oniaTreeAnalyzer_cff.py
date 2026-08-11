@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.tools.helpers import *
 
-def oniaTreeAnalyzer(process, muonTriggerList=[[],[],[],[]], HLTProName='HLT', muonSelection="Trk", L1Stage=2, isMC=True, pdgID=443, outputFileName="OniaTree.root", muonlessPV = False, doTrimu=False, doDimuTrk=False, flipJpsiDir=0, OnlySingleMuons=False, getObjectsBy="array"):
+def oniaTreeAnalyzer(process, muonTriggerList=[[],[],[],[]], HLTProName='HLT', muonSelection="Trk", L1Stage=2, isMC=True, pdgID=(443), outputFileName="OniaTree.root", muonlessPV = False, doTrimu=False, doDimuTrk=False, flipJpsiDir=0, OnlySingleMuons=False, getObjectsBy="array"):
 
     process.load("FWCore.MessageService.MessageLogger_cfi")
     process.MessageLogger.cerr.FwkReport.reportEvery = 1000
@@ -63,7 +63,7 @@ def oniaTreeAnalyzer(process, muonTriggerList=[[],[],[],[]], HLTProName='HLT', m
             doTrimuons          = cms.bool(doTrimu),  # Whether to produce trimuon objects
             DimuonTrk           = cms.bool(doDimuTrk),  # Whether to produce Jpsi+track objects
             flipJpsiDirection   = cms.int32(flipJpsiDir), # Whether to flip the Jpsi momentum direction
-            oniaPDG             = cms.int32(pdgID),
+            oniaPDG             = cms.vint32(pdgID),
             muonSel             = cms.string(muonSelection),
             isMC                = cms.untracked.bool(isMC),
             onlySingleMuons     = cms.bool(OnlySingleMuons),

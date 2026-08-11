@@ -61,7 +61,7 @@ HiOniaAnalyzer::HiOniaAnalyzer(const edm::ParameterSet& iConfig)
       _flipJpsiDirection(iConfig.getParameter<int>("flipJpsiDirection")),
       _genealogyInfo(iConfig.getParameter<bool>("genealogyInfo")),
       _miniAODcut(iConfig.getParameter<bool>("miniAODcut")),
-      _oniaPDG(iConfig.getParameter<int>("oniaPDG")),
+      _oniaPDG(iConfig.getParameter<std::vector<int> >("oniaPDG")),
       _BcPDG(iConfig.getParameter<int>("BcPDG")),
       _OneMatchedHLTMu(iConfig.getParameter<int>("OneMatchedHLTMu")),
       _checkTrigNames(iConfig.getParameter<bool>("checkTrigNames")),

@@ -82,17 +82,8 @@ void HiOniaAnalyzer::fillGenInfo() {
       const reco::GenParticle* gen = &(*it);
       
       bool goodGen = false;
-      if (_oniaPDG == 443) {
-        // Allow for non-Jpsi resonances to be included in gen
-        goodGen = abs(gen->pdgId()) ==    443 || // J/Psi
-                  abs(gen->pdgId()) == 100443 || // Psi(2S)
-                  abs(gen->pdgId()) == 200443 || // Psi(4040)
-                  abs(gen->pdgId()) == 300443 || // Psi(4230)
-                  abs(gen->pdgId()) == 400443 || // Psi(4360)
-                  abs(gen->pdgId()) == 500443 || // Psi(4415)
-                  abs(gen->pdgId()) == 600443;   // Psi(4660)
-      } else {
-        goodGen = abs(gen->pdgId()) == _oniaPDG;
+      for (int &oniapdg : _oniaPDG) {
+        if (!goodGen) goodGen = (abs(gen->pdgId()) == oniapdg);
       }
       if (goodGen && (gen->status() == 2 || (abs(gen->pdgId()) == 23 && gen->status() == 62)) &&
           gen->numberOfDaughters() >= 2) {
