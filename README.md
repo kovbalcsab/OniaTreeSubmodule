@@ -23,7 +23,7 @@ scram b -j8
 
 3) Add this repo and recompile:
 ```bash
-git remote add oniaforest git@github.com:jdlang/OniaTreeSubmodule.git
+git remote add oniaforest git@github.com:MITHIG/OniaTreeSubmodule.git
 git fetch oniaforest
 git checkout oniaforest/CMSSW_13_2_X_ForestIntegration HiAnalysis
 git checkout oniaforest/CMSSW_13_2_X_ForestIntegration HiSkim
@@ -31,7 +31,8 @@ git checkout oniaforest/CMSSW_13_2_X_ForestIntegration HeavyIonsAnalysis
 scram b -j8
 ```
 
-4) Enable the Onia Tree in your forest config:
+4) Enable the Onia Tree in your forest config by adding the following
+below somewhere below your `process.forest` initialization:
 ```python
 # Onia J/psi reco + ntuple
 from HiAnalysis.HiOnia.oniaTreeAnalyzer_cff import oniaTreeAnalyzer
