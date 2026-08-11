@@ -569,6 +569,7 @@ private:
   bool _fillRecoTracks;
   bool _isHI;
   bool _isPA;
+  bool _isUPC;
   bool _isMC;
   bool _isPromptMC;
   bool _useEvtPlane;

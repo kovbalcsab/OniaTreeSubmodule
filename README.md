@@ -41,7 +41,11 @@ from HiSkim.HiOnia2MuMu.onia2MuMuPAT_cff import changeToMiniAOD
 # No trigger categorization needed if you only want J/psi reco + decay length
 oniaTriggerList = {
     'DoubleMuonTrigger': cms.vstring(),
-    'SingleMuonTrigger': cms.vstring(),
+    'SingleMuonTrigger': cms.vstring(
+        "HLT_HIUPC_SingleMuOpen_NotMBHF2AND_v",
+        "HLT_HIUPC_SingleMuOpen_NotMBHF2AND_MaxPixelCluster1000_v",
+        "HLT_HIUPC_SingleMuOpen_BptxAND_MaxPixelCluster1000_v"
+    ),
 }
 
 oniaTreeAnalyzer(
@@ -50,10 +54,10 @@ oniaTreeAnalyzer(
     HLTProName = 'HLT',
     muonSelection = "GlbOrTrk",
     L1Stage = 2,
-    isMC = True,
-    pdgID = 443,
+    isMC = False,
+    pdgID = (443), # This is now a vector! add all onia channels enabled in MC
     outputFileName = OUTPUT_FILE_NAME,
-    muonlessPV = False,
+    muonlessPV = False, # Set True for non-prompt MC
     doTrimu = False,
     doDimuTrk = False,
     flipJpsiDir = 0,
@@ -79,17 +83,18 @@ process.hionia.fillHistos = cms.bool(False)
 process.hionia.fillSingleMuons = cms.bool(True)
 process.hionia.fillRecoTracks = cms.bool(True)
 process.hionia.onlySingleMuons = cms.bool(False)
-process.hionia.useBeamSpot = cms.bool(False)   # writes PV-based ctau: ppdlPV / ppdlPV3D
+process.hionia.useBeamSpot = cms.bool(False) # writes PV-based ctau: ppdlPV / ppdlPV3D
 process.hionia.useEvtPlane = cms.untracked.bool(False)
 process.hionia.storeSameSign = cms.bool(True)
 process.hionia.applyCuts = cms.bool(False)
 process.hionia.AtLeastOneCand = cms.bool(False)
 process.hionia.mom4format = cms.string("vector")
-process.hionia.isHI = cms.untracked.bool(True)
+process.hionia.isHI = cms.untracked.bool(False)
 process.hionia.isPA = cms.untracked.bool(False)
+process.hionia.isUPC = cms.untracked.bool(True)
 process.hionia.isMC = cms.untracked.bool(True)
 process.hionia.genealogyInfo = cms.bool(True)
-process.hionia.oniaPDG = cms.int32(443)
+process.hionia.oniaPDG = cms.vint32(443)
 process.hionia.isPromptMC = cms.untracked.bool(True)
 
 # MiniAOD adaptation; keep this minimal for first working setup
