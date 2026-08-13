@@ -770,6 +770,32 @@ void HiOniaAnalyzer::fillTreeJpsi(int count) {
           Reco_QQ_cosAlpha3D[Reco_QQ_size] = -10;
           std::cout << "Warning: User Float cosAlpha3D was not found" << std::endl;
         }
+	if (_muonLessPrimaryVertex) {
+		if (aJpsiCand->hasUserFloat("ppdlOrigPV")) {
+		  Reco_QQ_ctau_OrigPV[Reco_QQ_size] = 10.0 * aJpsiCand->userFloat("ppdlOrigPV");
+		} else {
+		  Reco_QQ_ctau_OrigPV[Reco_QQ_size] = -100;
+		  std::cout << "Warning: User Float ppdlOrigPV was not found" << std::endl;
+		}
+		if (aJpsiCand->hasUserFloat("ppdlErrOrigPV")) {
+		  Reco_QQ_ctauErr_OrigPV[Reco_QQ_size] = 10.0 * aJpsiCand->userFloat("ppdlErrOrigPV");
+		} else {
+		  Reco_QQ_ctauErr_OrigPV[Reco_QQ_size] = -100;
+		  std::cout << "Warning: User Float ppdlErrOrigPV was not found" << std::endl;
+		}
+		if (aJpsiCand->hasUserFloat("ppdlOrigPV3D")) {
+		  Reco_QQ_ctau3D_OrigPV[Reco_QQ_size] = 10.0 * aJpsiCand->userFloat("ppdlOrigPV3D");
+		} else {
+		  Reco_QQ_ctau3D_OrigPV[Reco_QQ_size] = -100;
+		  std::cout << "Warning: User Float ppdlOrigPV3D was not found" << std::endl;
+		}
+		if (aJpsiCand->hasUserFloat("ppdlErrOrigPV3D")) {
+		  Reco_QQ_ctauErr3D_OrigPV[Reco_QQ_size] = 10.0 * aJpsiCand->userFloat("ppdlErrOrigPV3D");
+		} else {
+		  Reco_QQ_ctau3D_OrigPV[Reco_QQ_size] = -100;
+		  std::cout << "Warning: User Float ppdlErrOrigPV3D was not found" << std::endl;
+		}
+	}
       }
       if (aJpsiCand->hasUserFloat("vProb")) {
         Reco_QQ_VtxProb[Reco_QQ_size] = aJpsiCand->userFloat("vProb");
@@ -1475,6 +1501,12 @@ void HiOniaAnalyzer::InitTree() {
     myTree->Branch("Reco_QQ_ctauErr3D", Reco_QQ_ctauErr3D, "Reco_QQ_ctauErr3D[Reco_QQ_size]/F");
     myTree->Branch("Reco_QQ_cosAlpha3D", Reco_QQ_cosAlpha3D, "Reco_QQ_cosAlpha3D[Reco_QQ_size]/F");
 
+    if (_muonLessPrimaryVertex) {
+	    myTree->Branch("Reco_QQ_ctau_OrigPV", Reco_QQ_ctau_OrigPV, "Reco_QQ_ctau_OrigPV[Reco_QQ_size]/F");
+	    myTree->Branch("Reco_QQ_ctauErr_OrigPV", Reco_QQ_ctauErr_OrigPV, "Reco_QQ_ctauErr_OrigPV[Reco_QQ_size]/F");
+	    myTree->Branch("Reco_QQ_ctau3D_OrigPV", Reco_QQ_ctau3D_OrigPV, "Reco_QQ_ctau3D_OrigPV[Reco_QQ_size]/F");
+	    myTree->Branch("Reco_QQ_ctauErr3D_OrigPV", Reco_QQ_ctauErr3D_OrigPV, "Reco_QQ_ctauErr3D_OrigPV[Reco_QQ_size]/F");
+    }		
     if (_isMC) {
       myTree->Branch("Reco_QQ_whichGen", Reco_QQ_whichGen, "Reco_QQ_whichGen[Reco_QQ_size]/S");
     }
