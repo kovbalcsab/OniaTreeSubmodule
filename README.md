@@ -16,7 +16,7 @@ cd CMSSW_13_2_15/src/
 cmsenv
 ```
 
-1) Merge the Heavy Ion foresting tools, and compile:
+2) Merge the Heavy Ion foresting tools, and compile:
 
 ```bash
 git cms-merge-topic CmsHI:forest_CMSSW_13_2_X
@@ -24,7 +24,7 @@ git remote add cmshi git@github.com:CmsHI/cmssw.git
 scram b -j8
 ```
 
-1) Add this repo and recompile:
+3) Add this repo and recompile:
 
 ```bash
 git remote add oniaforest git@github.com:MITHIG/OniaTreeSubmodule.git
@@ -35,7 +35,7 @@ git checkout oniaforest/CMSSW_13_2_X_ForestIntegration HeavyIonsAnalysis
 scram b -j8
 ```
 
-1) Enable the Onia Tree in your forest config by adding the following
+4) Enable the Onia Tree in your forest config by adding the following
 below somewhere below your `process.forest` initialization:
 
 ```python
@@ -43,7 +43,8 @@ below somewhere below your `process.forest` initialization:
 from HiAnalysis.HiOnia.oniaTreeAnalyzer_cff import oniaTreeAnalyzer
 from HiSkim.HiOnia2MuMu.onia2MuMuPAT_cff import changeToMiniAOD
 
-# No trigger categorization needed if you only want J/psi reco + decay length
+# Add muon-related triggers here, even if they are also in the HLT filter.
+# Order of triggers here will determine `Reco_mu_trig` bitmask:
 oniaTriggerList = {
     'DoubleMuonTrigger': cms.vstring(),
     'SingleMuonTrigger': cms.vstring(
@@ -60,9 +61,11 @@ oniaTreeAnalyzer(
     muonSelection = "GlbOrTrk",
     L1Stage = 2,
     isMC = False,
-    pdgID = (443), # This is now a vector! add all onia channels enabled in MC
+    # This a vector! Add all onia channels present in MC:
+    pdgID = (443),
     outputFileName = OUTPUT_FILE_NAME,
-    muonlessPV = True, # Set False if you want the original PV
+    # Set False if you want the original Primary Vertex:
+    muonlessPV = True, 
     doTrimu = False,
     doDimuTrk = False,
     flipJpsiDir = 0,
@@ -70,17 +73,19 @@ oniaTreeAnalyzer(
     getObjectsBy = "vector",
 )
 
-# J/psi candidate building
+# J/psi candidate building:
 process.onia2MuMuPatGlbGlb.dimuonSelection = cms.string("")
 process.onia2MuMuPatGlbGlb.lowerPuritySelection = cms.string(
     "abs(eta) < 2.4 && (isTrackerMuon || isGlobalMuon)"
 )
 process.onia2MuMuPatGlbGlb.onlySoftMuons = cms.bool(False)
 process.onia2MuMuPatGlbGlb.addCommonVertex = cms.bool(True)
-process.onia2MuMuPatGlbGlb.addMuonlessPrimaryVertex = cms.bool(True) # Set False if you want the original PV
-process.onia2MuMuPatGlbGlb.resolvePileUpAmbiguity = cms.bool(True) # Set False to use first vtx in vtx collection for all dimuon candidates
+# Set False to use the original primary vertex (e.g. for prompt MC):
+process.onia2MuMuPatGlbGlb.addMuonlessPrimaryVertex = cms.bool(True)
+# Set False to use first vertex in the vertex collection for all dimuon candidates:
+process.onia2MuMuPatGlbGlb.resolvePileUpAmbiguity = cms.bool(True) 
 
-# Keep only the J/psi ntuple content you care about
+# Keep only the J/psi ntuple content you care about:
 process.hionia.checkTrigNames = cms.bool(False)
 process.hionia.useSVfinder = cms.bool(False)
 process.hionia.fillTree = cms.bool(True)
@@ -88,7 +93,8 @@ process.hionia.fillHistos = cms.bool(False)
 process.hionia.fillSingleMuons = cms.bool(True)
 process.hionia.fillRecoTracks = cms.bool(True)
 process.hionia.onlySingleMuons = cms.bool(False)
-process.hionia.useBeamSpot = cms.bool(False) # writes PV-based ctau: ppdlPV / ppdlPV3D, dont use at same time as muonless PV
+# WARNING: Do not enable `useBeamSpot` at the same time as `muonlessPV`:
+process.hionia.useBeamSpot = cms.bool(False) # writes PV-based ctau: ppdlPV / ppdlPV3D
 process.hionia.useEvtPlane = cms.untracked.bool(False)
 process.hionia.storeSameSign = cms.bool(True)
 process.hionia.applyCuts = cms.bool(False)
@@ -100,15 +106,16 @@ process.hionia.isUPC = cms.untracked.bool(True)
 process.hionia.isMC = cms.untracked.bool(True)
 process.hionia.genealogyInfo = cms.bool(True)
 process.hionia.oniaPDG = cms.vint32(443)
-process.hionia.isPromptMC = cms.untracked.bool(True) # Remember to modify according to your MC sample
+# Set to True for prompt MC, False for non-prompt MC
+process.hionia.isPromptMC = cms.untracked.bool(True)
 
-# MiniAOD adaptation; keep this minimal for first working setup
+# MiniAOD adaptation; keep this minimal for first working setup:
 changeToMiniAOD(process, addIsolation=False)
 
-# Preserve the forest muon setting after changeToMiniAOD()
+# Preserve the forest muon setting after changeToMiniAOD():
 process.unpackedMuons.muonSelectors = cms.vstring()
 
-# Replace default PV input for miniAOD compatibility
+# Replace default primary vertex input for miniAOD compatibility:
 process.hionia.primaryVertexTag = cms.InputTag("unpackedTracksAndVertices")
 process.onia2MuMuPatGlbGlb.primaryVertexTag = cms.InputTag("unpackedTracksAndVertices")
 process.patMuonsWithoutTrigger.pvSrc = cms.InputTag("unpackedTracksAndVertices")
@@ -120,18 +127,18 @@ process.genMuons.src = cms.InputTag("prunedGenParticles")
 process.muonMatch.src = cms.InputTag("unpackedMuons")
 process.hionia.genParticles = cms.InputTag("prunedGenParticles")
 
-# Separate path; your existing filterSequence-prepend loop will also hit this path
+# Separate path; your existing filterSequence-prepend loop will also hit this path:
 process.oniaPath = cms.Path(process.oniaTreeAna)
 ```
 
-1) You must also modify the root output lines in your forest config for
-the Onia Tree config to use the same file, like this:
-
-```python
-# root output
-OUTPUT_FILE_NAME = "HiForestWithOnia.root"
-process.TFileService = cms.Service(
-    "TFileService",
-    fileName = cms.string(OUTPUT_FILE_NAME)
-)
-```
+> [!IMPORTANT]
+> You must also modify the root output lines in your forest config for
+> the Onia Tree config to use the same file, like this:
+> ```python
+> # root output
+> OUTPUT_FILE_NAME = "HiForestWithOnia.root"
+> process.TFileService = cms.Service(
+>     "TFileService",
+>     fileName = cms.string(OUTPUT_FILE_NAME)
+> )
+> ```
