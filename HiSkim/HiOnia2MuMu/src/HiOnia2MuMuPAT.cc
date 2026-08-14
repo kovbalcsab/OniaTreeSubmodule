@@ -34,6 +34,7 @@ HiOnia2MuMuPAT::HiOnia2MuMuPAT(const edm::ParameterSet &iConfig)
       thebeamspotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpotTag"))),
       thePVsToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("primaryVertexTag"))),
       recoTracksToken_(consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("srcTracks"))),
+      packedToTrackToken_(mayConsume<edm::Association<reco::TrackCollection>>(iConfig.getParameter<edm::InputTag>("srcTracks"))),
       theGenParticlesToken_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
       magFieldToken_(esConsumes<MagneticField, IdealMagneticFieldRecord>()),
       trackBuilderToken_(esConsumes(edm::ESInputTag("", "TransientTrackBuilder"))),
@@ -200,6 +201,26 @@ void HiOnia2MuMuPAT::produce(edm::Event &iEvent, const edm::EventSetup &iSetup) 
   Handle<View<pat::Muon> > muons;
   iEvent.getByToken(muonsToken_, muons);
 
+  Handle<edm::Association<reco::TrackCollection>> packedToTrack;
+  iEvent.getByToken(packedToTrackToken_, packedToTrack);
+
+  auto unpackedTrackForMuon = [&](const pat::Muon& muon) -> reco::TrackRef {
+    const auto& originalRef = muon.originalObjectRef();
+
+    if (!packedToTrack.isValid() || originalRef.isNull())
+      return reco::TrackRef();
+
+    return packedToTrack->get(originalRef.id(), originalRef.key());
+  };
+
+  auto sameTrack = [](const reco::TrackBaseRef& pvTrack,
+                      const reco::TrackRef& muonTrack) {
+    return pvTrack.isNonnull() &&
+           muonTrack.isNonnull() &&
+           pvTrack.id() == muonTrack.id() &&
+           pvTrack.key() == muonTrack.key();
+  };
+
   const auto &theTTBuilder = iSetup.getHandle(trackBuilderToken_);
   KalmanVertexFitter vtxFitter(true);
 
@@ -357,30 +378,42 @@ void HiOnia2MuMuPAT::produce(edm::Event &iEvent, const edm::EventSetup &iSetup) 
           //edm::LogWarning("HiOnia2MuMuPAT_addMuonlessPrimaryVertex") << "If muonLessPV is turned on, ctau is calculated with muonLessPV only.\n" ;
 
           // I need to go back to the reco::Muon object, as the TrackRef in the pat::Muon can be an embedded ref.
-          const reco::Muon *rmu1 = dynamic_cast<const reco::Muon *>(it.originalObject());
-          const reco::Muon *rmu2 = dynamic_cast<const reco::Muon *>(it2.originalObject());
-          if (thePrimaryV.hasRefittedTracks()) {
-            // Need to go back to the original tracks before taking the key
-            for (const auto &itRefittedTrack : thePrimaryV.refittedTracks()) {
-              if (thePrimaryV.originalTrack(itRefittedTrack).key() == rmu1->track().key())
-                continue;
-              if (thePrimaryV.originalTrack(itRefittedTrack).key() == rmu2->track().key())
-                continue;
-              const reco::Track &recoTrack = *(thePrimaryV.originalTrack(itRefittedTrack));
-              muonLess.push_back(recoTrack);
-            }
-          }  // PV has refitted tracks
-          else {
-            std::vector<reco::TrackBaseRef>::const_iterator itPVtrack = thePrimaryV.tracks_begin();
-            for (; itPVtrack != thePrimaryV.tracks_end(); ++itPVtrack)
-              if (itPVtrack->isNonnull()) {
-                if (itPVtrack->key() == rmu1->track().key())
-                  continue;
-                if (itPVtrack->key() == rmu2->track().key())
-                  continue;
-                muonLess.push_back(**itPVtrack);
-              }
-          }  // take all tracks associated with the vtx
+	  const reco::TrackRef muon1Track = unpackedTrackForMuon(it);
+  	  const reco::TrackRef muon2Track = unpackedTrackForMuon(it2);
+
+  	  if (muon1Track.isNull() || muon2Track.isNull()) {
+     		edm::LogWarning("HiOnia2MuMuPAT_MuonTrackAssociation")
+        		<< "Could not map one or both muons to unpackedTracksAndVertices. "
+           		"Muonless PV refit skipped.";
+  	  } else {
+		  if (thePrimaryV.hasRefittedTracks()) {
+		    for (const auto& refittedTrack : thePrimaryV.refittedTracks()) {
+		      const reco::TrackBaseRef pvTrack =
+			  thePrimaryV.originalTrack(refittedTrack);
+
+		      if (sameTrack(pvTrack, muon1Track) ||
+			  sameTrack(pvTrack, muon2Track))
+			continue;
+
+		      if (pvTrack.isNonnull())
+			muonLess.push_back(*pvTrack);
+		    }
+		  } else {
+		    for (reco::Vertex::trackRef_iterator itPVtrack =
+			     thePrimaryV.tracks_begin();
+			 itPVtrack != thePrimaryV.tracks_end();
+			 ++itPVtrack) {
+		      if (!itPVtrack->isNonnull())
+			continue;
+
+		      if (sameTrack(*itPVtrack, muon1Track) ||
+			  sameTrack(*itPVtrack, muon2Track))
+			continue;
+
+		      muonLess.push_back(**itPVtrack);
+		    }
+		  }
+	  }
 
           if (muonLess.size() > 1 && muonLess.size() < thePrimaryV.tracksSize()) {
             // find the new vertex, from which the 2 munos were removed
