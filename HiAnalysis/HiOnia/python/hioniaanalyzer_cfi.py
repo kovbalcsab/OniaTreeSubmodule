@@ -31,7 +31,7 @@ hionia = cms.EDAnalyzer('HiOniaAnalyzer',
 
                         onlyTheBest = cms.bool(False),
                         applyCuts = cms.bool(False),
-			selTightGlobalMuon = cms.bool(False),
+                        selTightGlobalMuon = cms.bool(False),
                         storeEfficiency = cms.bool(False),
                         SofterSgMuAcceptance = cms.bool(False),
                         SumETvariables = cms.bool(True),
@@ -52,10 +52,11 @@ hionia = cms.EDAnalyzer('HiOniaAnalyzer',
 
                         #-- Gen Details
                         BcPDG = cms.int32(541),
-                        oniaPDG = cms.int32(443),
+                        oniaPDG = cms.vint32(443),
                         muonSel = cms.string("GlbGlb"),
-                        isHI = cms.untracked.bool(True),
-                        isPA = cms.untracked.bool(False),
+                        isHI = cms.untracked.bool(False), # Heavy ions (NOT UPC)
+                        isPA = cms.untracked.bool(False), # pA
+                        isUPC = cms.untracked.bool(True), # Heavy ion UPCs
                         isMC = cms.untracked.bool(False),
                         isPromptMC = cms.untracked.bool(True),
                         useEvtPlane = cms.untracked.bool(False),

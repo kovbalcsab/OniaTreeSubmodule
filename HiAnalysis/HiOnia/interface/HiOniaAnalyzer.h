@@ -283,6 +283,7 @@ private:
   float Gen_pthat;   // ptHat scale of generated hard scattering
 
   Short_t Gen_QQ_size;               // number of generated Onia
+  int     Gen_QQ_pdgid[Max_QQ_size]; // PDG ID of gen onia, intended for MC with multiple resonances
   Short_t Gen_QQ_type[Max_QQ_size];  // Onia type: prompt, non-prompt, unmatched
   float Gen_QQ_ctau[Max_QQ_size];    // ctau: flight time
   float Gen_QQ_ctau3D[Max_QQ_size];  // ctau3D: 3D flight time
@@ -367,11 +368,15 @@ private:
   ULong64_t Reco_QQ_trig[Max_QQ_size];  // Vector of trigger bits matched to the Onia
   float Reco_QQ_VtxProb[Max_QQ_size];   // chi2 probability of vertex fitting
   float Reco_QQ_ctau[Max_QQ_size];      // ctau: flight time
+  float Reco_QQ_ctau_OrigPV[Max_QQ_size];      // ctau: flight time
   float Reco_QQ_ctauErr[Max_QQ_size];   // error on ctau
+  float Reco_QQ_ctauErr_OrigPV[Max_QQ_size];   // error on ctau
   float Reco_QQ_cosAlpha
       [Max_QQ_size];  // cosine of angle between momentum of Jpsi and direction of PV--displaced vertex segment (in XY plane)
   float Reco_QQ_ctau3D[Max_QQ_size];     // ctau: flight time in 3D
+  float Reco_QQ_ctau3D_OrigPV[Max_QQ_size];     // ctau: flight time in 3D
   float Reco_QQ_ctauErr3D[Max_QQ_size];  // error on ctau in 3D
+  float Reco_QQ_ctauErr3D_OrigPV[Max_QQ_size];  // error on ctau in 3D
   float Reco_QQ_cosAlpha3D
       [Max_QQ_size];  // cosine of angle between momentum of Jpsi and direction of PV--displaced vertex segment (3D)
   float Reco_QQ_dca[Max_QQ_size];
@@ -569,6 +574,7 @@ private:
   bool _fillRecoTracks;
   bool _isHI;
   bool _isPA;
+  bool _isUPC;
   bool _isMC;
   bool _isPromptMC;
   bool _useEvtPlane;
@@ -579,7 +585,7 @@ private:
   bool _genealogyInfo;
   bool _miniAODcut;
 
-  int _oniaPDG;
+  std::vector<int> _oniaPDG;
   int _BcPDG;
   int _OneMatchedHLTMu;
   bool _checkTrigNames;
@@ -607,8 +613,8 @@ private:
   float JpsiPtMax;   // DEFINITION
   float JpsiRapMin;  // OF BIN
   float JpsiRapMax;  // LIMITS
-  float JpsiPDGMass = 3.09609;
-  float BcPDGMass = 6.2745;
+  float JpsiPDGMass = 3.096916;
+  float BcPDGMass = 6.276;
 
   math::XYZPoint RefVtx;
   float RefVtx_xError;

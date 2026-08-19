@@ -26,5 +26,5 @@ onia2MuMuPAT = cms.EDProducer('HiOnia2MuMuPAT',
         flipJpsiDirection        = cms.int32(False), ## flip the Jpsi direction, before combining it with a third muon
         particleType             = cms.int32(211), ## pdgInt assigned to the track to be combined with the dimuons
         trackMassHypothesis      = cms.double(0.13957018), ## mass assigned to the track to be combined with the dimuons
-        dimuonMassHypothesis     = cms.double(3.09609) ## dimuon mass hypothesis for KinematicConstrainedVertexFitter and lifetime estimates
+        dimuonMassHypothesis     = cms.double(3.096916) ## dimuon mass hypothesis for KinematicConstrainedVertexFitter and lifetime estimates
 )

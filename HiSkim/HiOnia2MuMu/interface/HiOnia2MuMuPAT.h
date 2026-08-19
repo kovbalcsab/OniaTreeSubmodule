@@ -25,6 +25,7 @@
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/Common/interface/Association.h"
 
 #include <CommonTools/UtilAlgos/interface/StringCutObjectSelector.h>
 #include "RecoVertex/VertexTools/interface/InvariantMassFromVertex.h"
@@ -63,6 +64,7 @@ private:
   edm::EDGetTokenT<reco::BeamSpot> thebeamspotToken_;
   edm::EDGetTokenT<reco::VertexCollection> thePVsToken_;
   edm::EDGetTokenT<reco::TrackCollection> recoTracksToken_;
+  edm::EDGetTokenT<edm::Association<reco::TrackCollection>> packedToTrackToken_;
   edm::EDGetTokenT<reco::GenParticleCollection> theGenParticlesToken_;
   edm::ESGetToken<MagneticField, IdealMagneticFieldRecord> magFieldToken_;
   edm::ESGetToken<TransientTrackBuilder, TransientTrackRecord> trackBuilderToken_;

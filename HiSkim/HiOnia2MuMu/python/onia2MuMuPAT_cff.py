@@ -178,9 +178,9 @@ def changeToMiniAOD(process):
             triggerResults              = cms.InputTag('TriggerResults::HLT'),
             unpackFilterLabels          = cms.bool(True)
         )
-        process.load('HiAnalysis.HiOnia.unpackedTracksAndVertices_cfi')
+        process.load('HeavyIonsAnalysis.TrackAnalysis.unpackedTracksAndVertices_cfi')
         process.patMuonSequence.insert(0, process.unpackedTracksAndVertices)
-        process.load('HiAnalysis.HiOnia.unpackedMuons_cfi')
+        process.load('HeavyIonsAnalysis.MuonAnalysis.unpackedMuons_cfi')
         if not process.hionia.isHI:
             process.unpackedMuons.muonSelectors = []
         process.patMuonSequence.insert(1, process.unpackedMuons)
@@ -192,7 +192,7 @@ def changeToMiniAOD(process):
         if hasattr(process, "muonMatch"):
             from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import changeRecoMuonInput
             changeRecoMuonInput(process, recoMuonCollectionTag=cms.InputTag("unpackedMuonsWithGenMatch"), oldRecoMuonCollectionTag=cms.InputTag("unpackedMuons"))
-            process.load('HiAnalysis.HiOnia.unpackedMuonsWithGenMatch_cfi')
+            process.load('HeavyIonsAnalysis.MuonAnalysis.unpackedMuonsWithGenMatch_cfi')
             process.patMuonsWithTriggerSequence.insert(1, process.unpackedMuonsWithGenMatch)
 
             process.onia2MuMuPatGlbGlb.genParticles = "prunedGenParticles"
