@@ -1458,12 +1458,6 @@ void HiOniaAnalyzer::InitTree() {
       myTree->Branch("Reco_3mu_ctauErr3D", Reco_3mu_ctauErr3D, "Reco_3mu_ctauErr3D[Reco_3mu_size]/F");
       myTree->Branch("Reco_3mu_cosAlpha3D", Reco_3mu_cosAlpha3D, "Reco_3mu_cosAlpha3D[Reco_3mu_size]/F");
 
-      if (_muonLessPrimaryVertex) {
-        myTree->Branch("Reco_QQ_ctau_OrigPV", Reco_QQ_ctau_OrigPV, "Reco_QQ_ctau_OrigPV[Reco_QQ_size]/F");
-        myTree->Branch("Reco_QQ_ctauErr_OrigPV", Reco_QQ_ctauErr_OrigPV, "Reco_QQ_ctauErr_OrigPV[Reco_QQ_size]/F");
-        myTree->Branch("Reco_QQ_ctau3D_OrigPV", Reco_QQ_ctau3D_OrigPV, "Reco_QQ_ctau3D_OrigPV[Reco_QQ_size]/F");
-        myTree->Branch("Reco_QQ_ctauErr3D_OrigPV", Reco_QQ_ctauErr3D_OrigPV, "Reco_QQ_ctauErr3D_OrigPV[Reco_QQ_size]/F");
-      }		
       if (_isMC) {
         myTree->Branch("Reco_3mu_whichGen", Reco_3mu_whichGen, "Reco_3mu_whichGen[Reco_3mu_size]/S");
       }
@@ -1523,6 +1517,12 @@ void HiOniaAnalyzer::InitTree() {
     myTree->Branch("Reco_QQ_ctauErr3D", Reco_QQ_ctauErr3D, "Reco_QQ_ctauErr3D[Reco_QQ_size]/F");
     myTree->Branch("Reco_QQ_cosAlpha3D", Reco_QQ_cosAlpha3D, "Reco_QQ_cosAlpha3D[Reco_QQ_size]/F");
 
+    if (_muonLessPrimaryVertex) {
+      myTree->Branch("Reco_QQ_ctau_OrigPV", Reco_QQ_ctau_OrigPV, "Reco_QQ_ctau_OrigPV[Reco_QQ_size]/F");
+      myTree->Branch("Reco_QQ_ctauErr_OrigPV", Reco_QQ_ctauErr_OrigPV, "Reco_QQ_ctauErr_OrigPV[Reco_QQ_size]/F");
+      myTree->Branch("Reco_QQ_ctau3D_OrigPV", Reco_QQ_ctau3D_OrigPV, "Reco_QQ_ctau3D_OrigPV[Reco_QQ_size]/F");
+      myTree->Branch("Reco_QQ_ctauErr3D_OrigPV", Reco_QQ_ctauErr3D_OrigPV, "Reco_QQ_ctauErr3D_OrigPV[Reco_QQ_size]/F");
+    }		
     if (_isMC) {
       myTree->Branch("Reco_QQ_whichGen", Reco_QQ_whichGen, "Reco_QQ_whichGen[Reco_QQ_size]/S");
     }
